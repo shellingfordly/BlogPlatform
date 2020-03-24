@@ -1,0 +1,141 @@
+.user, .otherUser {
+  .container {
+    .headerbox {
+      .headerbox-top {
+        .headerbox_link {
+          float: left;
+          width: 80px;
+          height: 80px;
+          margin: auto;
+          cursor: pointer;
+          border-radius: 100%;
+          overflow: hidden;
+
+          img {
+            width: 96px;
+            height: 80px;
+            margin-left: -8px;
+          }
+        }
+
+        .explain {
+          float: left;
+          margin-left: 20px;
+
+          .title {
+            position: relative;
+            font-size: 20px;
+            cursor: pointer;
+
+            .name:hover {
+              color: #ccc;
+            }
+
+            .like_user {
+              position: absolute;
+              top: 3px;
+              right: 0;
+
+              &:hover {
+                color: #ccc;
+              }
+            }
+          }
+
+          .sub-title {
+            width: 200px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            margin-top: 10px;
+            font-size: 14px;
+          }
+        }
+      }
+
+      .headerbox-bot {
+        .iconbox, .aboutotherbox {
+          .iconBtn_box {
+            text-align: center;
+            cursor: pointer;
+
+            &:hover {
+              color: #ccc;
+            }
+
+            span {
+              font-size: 20px;
+            }
+
+            .el-icon-user {
+              font-size: 20px;
+            }
+          }
+        }
+
+        .aboutotherbox {
+          position: relative;
+          margin-top: 20px;
+          padding-top: 20px;
+
+          &:after {
+            position: absolute;
+            top: 0;
+            content: '';
+            width: 270px;
+            height: 1px;
+            background-color: #222;
+          }
+        }
+      }
+    }
+
+    .content {
+      padding-top: 20px;
+
+      .content_title {
+        padding: 10px 0;
+        margin-bottom: 30px;
+        text-align: center;
+        background-color: #111;
+        border-radius: 10px;
+        font-size: 30px;
+      }
+
+      .add_ariticle {
+        cursor: pointer;
+
+        i {
+          font-size: 40px;
+          color: #8a8a8a;
+        }
+      }
+
+      .follower_box, .fans_box {
+        .followers, .fans {
+          .follow, .fan {
+            float: left;
+            width: 33.3%;
+            text-align: center;
+            line-height: 40px;
+            margin-bottom: 20px;
+
+            .follow_name ,.fan_name {
+              width: 80%;
+              margin: auto;
+              background-color: #111;
+              border-radius: 10px;
+              line-height: 50px;
+              cursor: pointer;
+
+              &:hover {
+                color: #ccc;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

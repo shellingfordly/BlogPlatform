@@ -1,0 +1,63 @@
+body,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,fieldset,legend,input,textarea,select{margin:0;padding:0} 
+body{font:12px,"Arial Narrow",HELVETICA;-webkit-text-size-adjust:100%;} 
+a{text-decoration:none} 
+a:hover{text-decoration:underline} 
+em{font-style:normal} 
+li{list-style:none} 
+img{border:0;vertical-align:middle} 
+table{border-collapse:collapse;border-spacing:0} 
+p{word-wrap:break-word}
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  overflow: hidden;
+}
+body {
+  background-color: black;
+  color: aliceblue;
+}
+
+.clearfix {
+  overflow:hidden
+}
+
+.el-message {
+  background-color: #333 !important;
+  border: 0 !important;
+  min-width: 200px !important;
+}
+
+.el-message-box {
+  background-color: #222 !important;
+  border: 0 !important;
+}
+
+.el-message-box .el-message-box__title {
+  color: #ccc !important;  
+}
+
+.el-message-box .el-message-box__message {
+  color: #ccc !important;  
+}
+
+.el-message-box .el-message-box__container .el-icon-warning {
+  color: #606266 !important;
+}
+
+.el-message-box__btns .el-button--default {
+  background-color: #606266 !important;
+  border: 0;
+  color: #ccc !important;
+}
+
+.el-message-box__btns .el-button--default:hover {
+  background-color: #606266;
+  color: #ddd;
+}
+
+
+.el-tooltip__popper.is-dark {
+  color: #8a8a8a !important;
+}
