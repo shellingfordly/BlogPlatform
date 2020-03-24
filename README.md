@@ -1,4 +1,4 @@
-# 毕业设计
+# 博客平台
 
 ## 启动数据库
 ```
@@ -19,4 +19,4 @@ npm install
 npm run serve
 ```
 
-打开http://localhost:4000
+打开http:\/\/localhost:4000
