@@ -6,27 +6,31 @@
         <input class="headline" type="text" v-model="article.title" />
       </div>
 
-      <div class="content_box">
-        <textarea class="content" v-model="article.content"></textarea>
-      </div>
-
       <div class="btn_box">
+        <span class="iconfont markdown" @click="shiftMarkdown">&#xe838;</span>
         <img src="../assets/imgs/update.svg" @click="submitArticle" title="上传" alt />
         <img src="../assets/imgs/save.svg" @click="saveArticle" title="保存" alt />
         <img src="../assets/imgs/fanhui.svg" @click="backHome" title="取消" alt />
+      </div>
+
+      <div class="content_box">
+        <Markdown v-if="isMarkdown" v-model="article.content" />
+        <textarea v-else class="content" v-model="article.content"></textarea>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import Markdown from "vue-meditor";
 import BackBtn from "../components/BackBtn";
+import { addArticle, modifyArticle } from "../api/article";
 
 export default {
   name: "AddAriticle",
   components: {
-    BackBtn
+    BackBtn,
+    Markdown
   },
   data() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -37,24 +41,24 @@ export default {
         articleList: user.account,
         author: user.name
       },
+      isMarkdown: false,
       link: "user"
     };
   },
   created() {
     let article = JSON.parse(localStorage.getItem("article"));
-    if (article) this.article = article;
+    article &&
+      Object.keys(article).forEach(key => {
+        this.article[key] = article[key];
+      });
     this.articleInitial();
   },
   methods: {
     async articleInitial() {
-      if (this.$route.query.articleId) {
-        const result = await axios.get(
-          "http://localhost:3000/getSingleArticle?articleId=" +
-            this.$route.query.articleId
-        );
-        this.article.title = result.title;
-        this.article.content = result.content;
-        this.link = { name: "article", articleId: this.$route.query.articleId };
+      const { article } = this.$route.params;
+      if (article) {
+        this.article.title = article.title;
+        this.article.content = article.content;
       }
     },
     backHome() {
@@ -70,19 +74,33 @@ export default {
           this.$router.push({ name: "user" });
         });
     },
-    submitArticle() {
-      axios.post("http://localhost:3000/addArticle", this.article).then(res => {
-        if (res) {
-          this.$message("发表成功");
-          localStorage.removeItem("article");
-          this.$router.push({ name: "user" });
-        }
-      });
+    async submitArticle() {
+      const { article } = this.$route.params;
+      let res = null;
+      if (article) {
+        res = await modifyArticle(article.articleId, this.article);
+      } else {
+        res = await addArticle(this.article);
+      }
+      if (res) {
+        this.$message(res);
+        this.$router.push({ name: "user" });
+      }
     },
     saveArticle() {
-      localStorage.setItem("article", JSON.stringify(this.article));
+      let article = this.article;
+      localStorage.setItem(
+        "article",
+        JSON.stringify({
+          title: article.title,
+          content: article.content
+        })
+      );
       this.$message("保存成功");
       this.$router.push({ name: "user" });
+    },
+    shiftMarkdown() {
+      this.isMarkdown = !this.isMarkdown;
     }
   }
 };
@@ -90,22 +108,25 @@ export default {
 
 <style lang="stylus" scoped>
 .addAriticle {
+  width: 100%;
   height: 100%;
 
   .container {
-    width: 1200px;
+    width: 1000px;
     height: 100%;
     margin: auto;
 
     .headline_box {
-      width: 800px;
-      margin: 40px auto 0;
+      width: 100%;
+      padding-top: 40px;
+      margin: auto;
 
       .headline {
-        width: 780px;
+        width: 100%;
         height: 70px;
         padding: 0 10px;
-        background-color: #222;
+        box-sizing: border-box;
+        background-color: #111;
         border-radius: 10px;
         border: 0;
         outline: 0;
@@ -116,19 +137,36 @@ export default {
     }
 
     .content_box {
-      width: 800px;
-      height: 65%;
-      margin: 40px auto 0;
-      background-color: #222;
+      width: 100%;
+      height: 1000px;
+      margin: 20px auto 50px;
+      background-color: #111;
       border-radius: 10px;
       overflow: hidden;
 
+      /deep/ .markdown {
+        height: 100% !important;
+        background-color: #111;
+        border: 0 !important;
+
+        .markdown-toolbars {
+          background-color: #111;
+          border-bottom: 1px solid #222;
+        }
+
+        .markdown-content {
+          .markdown-theme-light {
+            // display: none;
+          }
+        }
+      }
+
       .content {
-        width: 780px;
-        padding: 10px;
-        height: 99%;
+        width: 980px;
+        padding: 15px 10px;
+        height: 100%;
         resize: none;
-        background-color: #222;
+        background-color: #111;
         border: 0;
         font-size: 30px;
         line-height: 40px;
@@ -137,7 +175,7 @@ export default {
 
         /* 定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸 */
         &::-webkit-scrollbar {
-          width: 10px;
+          width: 5px;
           height: 10px;
           background-color: #8a8a8a;
         }
@@ -160,17 +198,22 @@ export default {
 
     .btn_box {
       margin-top: 20px;
-      text-align: center;
+      text-align: right;
 
-      img {
-        width: 40px;
-        height: 40px;
-        color: #222;
+      span {
+        color: #333;
+        font-size: 30px;
+        vertical-align: middle;
         cursor: pointer;
       }
 
-      img:not(:nth-child(3)) {
-        margin-right: 30px;
+      img {
+        width: 30px;
+        height: 30px;
+        margin-left: 30px;
+        color: #222;
+        cursor: pointer;
+        vertical-align: middle;
       }
     }
   }

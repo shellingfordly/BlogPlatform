@@ -4,20 +4,39 @@ const Article = require('../models/articleSchema')
 module.exports = {
   // 登录
   "POST /login": async (cxt) => {
-    const { account, password } = cxt.request.body
-    const res = await User.find({ "account": account })
-    if (!res.length) cxt.body = { code: 0 }
+    const {
+      account,
+      password
+    } = cxt.request.body
+    const res = await User.find({
+      "account": account
+    })
+    if (!res.length) cxt.body = {
+      code: 0
+    }
     else if (password == res[0].password)
-      cxt.body = { code: 1, msg: res[0] }
-    else cxt.body = { code: 2 }
+      cxt.body = {
+        code: 1,
+        msg: res[0]
+      }
+    else cxt.body = {
+      code: 2
+    }
   },
   // 注册
   "POST /logon": async cxt => {
-    const { account, password } = cxt.request.body
-    const res = await User.find({ "account": account })
+    const {
+      account,
+      password
+    } = cxt.request.body
+    const res = await User.find({
+      "account": account
+    })
     if (res.length) {
       // 注册失败
-      cxt.body = { code: 0 }
+      cxt.body = {
+        code: 0
+      }
     } else {
       // 注册成功
       let num = (await User.find()).length + 1;
@@ -26,18 +45,23 @@ module.exports = {
         password,
         num,
         articleList: account,
-        name: "用户" + num
+        name: "用户" + num,
+        signature: "暂无签名",
+        about: "..."
       })
-      cxt.body = { code: 1, msg: user }
+      cxt.body = {
+        code: 1,
+        msg: user
+      }
     }
   },
   // 修改用户信息
   "POST /modifyUserMsg": async cxt => {
-    const data = cxt.request.body
+    const user = cxt.request.body
     User.update({
-      "account": data.account
+      "account": user.account
     }, {
-      '$set': data
+      '$set': user
     }, function (err, data) {
       // 必须有回调
       if (err) {
@@ -47,9 +71,11 @@ module.exports = {
       }
     });
     Article.updateMany({
-      "articleList": data.account
+      "articleList": user.account
     }, {
-      '$set': { author: data.name }
+      '$set': {
+        author: user.name
+      }
     }, function (err, data) {
       // 必须有回调
       if (err) {
@@ -58,16 +84,27 @@ module.exports = {
         console.log(data);
       }
     })
-    const msg = await User.find({ "account": data.account })
-    cxt.body = { code: 1, msg: msg[0] }
+
+    const msg = await User.findOne({
+      "account": user.account
+    })
+    cxt.body = {
+      code: 1,
+      msg: msg
+    }
   },
   // 修改用户头像
   "POST /modifyUserHeadId": async cxt => {
-    const { headId, account } = cxt.request.body
+    const {
+      headId,
+      account
+    } = cxt.request.body
     User.update({
       account
     }, {
-      '$set': { headId }
+      '$set': {
+        headId
+      }
     }, function (err, data) {
       // 必须有回调
       if (err) {
@@ -80,16 +117,37 @@ module.exports = {
   },
   // 获取用户信息
   "POST /getUserMsg": async cxt => {
-    const { articleList } = cxt.request.body
-    const user = await User.findOne({ articleList })
+    const {
+      articleList
+    } = cxt.request.body
+    const user = await User.findOne({
+      articleList
+    })
     cxt.body = user
   },
+  // 关注与被关注
   "POST /setLikeUser": async cxt => {
-    const { follow, follower, isFollow } = cxt.request.body
-    const followUser = await User.findOne({ account: follow })
-    const followerUser = await User.findOne({ account: follower })
+    /**
+     * 关注
+     * @param {
+     *  follow: 关注者
+     *  follower: 被关注者
+     *  isFollow: 是否关注
+     * } 
+     */
+    const {
+      follow,
+      follower,
+      isFollow
+    } = cxt.request.body
+    const followUser = await User.findOne({
+      account: follow
+    })
+    const followerUser = await User.findOne({
+      account: follower
+    })
     const is_exist_follow_user = followUser.likeUser.length ? followUser.likeUser.findIndex(item => item.account === follower) : -1
-    const is_exist_follower_user = followUser.follow.length ? followerUser.follow.findIndex(item => item.account === follow) : -1
+    const is_exist_follower_user = followerUser.follow.length ? followerUser.follow.findIndex(item => item.account === follow) : -1
     console.log(is_exist_follow_user, is_exist_follower_user)
 
     if (isFollow) { // 关注
@@ -164,7 +222,9 @@ module.exports = {
         }
       });
     }
-    const user = await User.findOne({ account: follow })
+    const user = await User.findOne({
+      account: follow
+    })
     cxt.body = user
   },
 }

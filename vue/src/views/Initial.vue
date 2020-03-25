@@ -31,7 +31,7 @@ export default {
   mounted() {
     $("#initial_3d_bg").html5_3d_animation({
       window_width: window.document.body.offsetWidth,
-      window_height: window.screen.availHeight,
+      window_height: window.innerHeight,
       window_background: "Mulletized",
       star_count: "200",
       star_color: "#fff",
@@ -74,7 +74,7 @@ export default {
 
   .home_link {
     position: absolute;
-    margin-top: -40px;
+    margin-top: -10px;
     width: 80px;
     height: 80px;
     z-index: 100;

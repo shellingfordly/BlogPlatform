@@ -31,21 +31,18 @@
               <span class="iconfont icon-fensiguanli" @click="showFans"></span>
             </div>
           </div>
-          <div v-if="user" class="aboutotherbox flexbox">
-            <div v-if="aboutOther.weibo" class="iconBtn_box">
-              <span @click="targetOtherPage(aboutOther.other.weibo)" class="iconfont icon-weibo"></span>
+          <div v-if="other" class="aboutotherbox flexbox">
+            <div class="iconBtn_box">
+              <span @click="targetOtherPage('weibo')" class="iconfont icon-weibo"></span>
             </div>
-            <div v-if="aboutOther.boke" class="iconBtn_box">
-              <span @click="targetOtherPage(aboutOther.other.boke)" class="iconfont icon-bokeyuan"></span>
+            <div class="iconBtn_box">
+              <span @click="targetOtherPage('boke')" class="iconfont icon-bokeyuan"></span>
             </div>
-            <div v-if="aboutOther.github" class="iconBtn_box">
-              <span @click="targetOtherPage(aboutOther.other.github)" class="iconfont icon-github"></span>
+            <div class="iconBtn_box">
+              <span @click="targetOtherPage('github')" class="iconfont icon-github"></span>
             </div>
-            <div v-if="aboutOther.bilibili" class="iconBtn_box">
-              <span
-                @click="targetOtherPage(aboutOther.other.bilibili)"
-                class="iconfont icon-CN_bilibiliB"
-              ></span>
+            <div class="iconBtn_box">
+              <span @click="targetOtherPage('bilibili')" class="iconfont icon-CN_bilibiliB"></span>
             </div>
           </div>
         </div>
@@ -69,7 +66,7 @@
                 <p class="follow_name" @click="targetOtherUser(user.account)">{{user.name}}</p>
               </div>
             </div>
-            <div class="ss" v-else>暂无关注对象</div>
+            <div class="hint" v-else>暂无关注对象</div>
           </div>
           <!-- 关注者 -->
           <div class="fans_box" v-if="isShowFans">
@@ -79,7 +76,7 @@
                 <p class="fan_name" @click="targetOtherUser(fan.account)">{{fan.name}}</p>
               </div>
             </div>
-            <div class="ss" v-else>暂无关注者</div>
+            <div class="hint" v-else>暂无关注者</div>
           </div>
           <!-- 文章 -->
           <div class="ariticleList" v-if="isShowArticle">
@@ -156,21 +153,10 @@ export default {
     }
   },
   computed: {
-    aboutOther() {
-      if (!this.user)
-        return {
-          weibo: "",
-          boke: "",
-          github: "",
-          bilibili: ""
-        };
-      let { weibo, boke, github, bilibili } = this.user.other;
-      let aboutOther = {};
-      if (weibo) aboutOther.weibo = weibo;
-      if (boke) aboutOther.boke = boke;
-      if (github) aboutOther.github = github;
-      if (bilibili) aboutOther.bilibili = bilibili;
-      return aboutOther;
+    other() {
+      const { weibo, boke, github, bilibili } = this.user.other;
+      if (weibo && boke && github && bilibili) return true;
+      return false;
     },
     name() {
       return this.user ? this.user.name : "";
@@ -188,7 +174,8 @@ export default {
   },
   methods: {
     async initialAllMsg() {
-      if (!this.user) {
+      const user = this.user;
+      if (!user) {
         this.$router.push({ name: "home" });
         return;
       }
@@ -198,9 +185,9 @@ export default {
         (a, b) => b.num - a.num
       );
       // 关注的人
-      this.likeUsers = this.user.likeUser;
+      this.likeUsers = user.likeUser;
       // 粉丝
-      this.fans = this.user.follow;
+      this.fans = user.follow;
     },
     // 跳转作者详细信息页面
     targetAbout() {
@@ -208,14 +195,33 @@ export default {
     },
     // 展示作者的所有文章
     myselfArticle() {
-      if (this.showArticles === this.ownArticles) return;
       this.closeAll();
       this.isAddArticle = true;
       this.isShowArticle = true;
-      this.showArticles = this.ownArticles;
+      this.showArticles === this.ownArticles ||
+        (this.showArticles = this.ownArticles);
     },
     // 跳转到其他页面
-    targetOtherPage(link) {
+    targetOtherPage(type) {
+      let link = "";
+      let other = this.user.other;
+      switch (type) {
+        case "weibo":
+          link = other.weibo;
+          break;
+        case "boke":
+          link = other.boke;
+          break;
+        case "github":
+          link = other.github;
+          break;
+        case "bilibili":
+          link = other.bilibili;
+          break;
+        default:
+          link = "user";
+          break;
+      }
       window.open(link);
     },
     // 切换到其他文章作者信息
@@ -272,4 +278,16 @@ export default {
 @import '../assets/css/home.styl';
 @import '../assets/css/user.styl';
 @import '../assets/css/articlelist.styl';
+
+.user {
+  .container {
+    .content {
+      height: 85%;
+
+      .content_title {
+        margin-top: 30px;
+      }
+    }
+  }
+}
 </style>

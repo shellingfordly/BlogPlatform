@@ -58,7 +58,7 @@ export default {
 
 <style lang="stylus" scoped>
 .back_btn {
-  position: absolute;
+  position: fixed;
   top: -20px;
   left: 80px;
 

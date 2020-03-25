@@ -1,0 +1,187 @@
+ol:not(.article > ol){}
+ul:not(.article > ul){}
+h1:not(.article > h1){}
+h2:not(.article > h2){}
+h3:not(.article > h3){}
+h4:not(.article > h4){}
+h5:not(.article > h5){}
+h6:not(.article > h6){}
+p:not(.article > p){}
+th:not(.article > th){}
+td:not(.article > th){}
+dl:not(.article > dl){}
+dd:not(.article > dd){}
+form:not(.article > form),
+fieldset:not(.article > fieldset){}
+legend:not(.article > legend){}
+input:not(.article > input){}
+textarea:not(.article > textarea){}
+select:not(.article > select) {
+  margin: 0;
+  padding: 0
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font: 12px, "Arial Narrow", HELVETICA;
+  -webkit-text-size-adjust: 100%;
+  background-color: black;
+  color: aliceblue;
+
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  a:not(.article > a){
+    text-decoration: none
+    &:hover {
+      text-decoration: underline
+    }
+  }
+
+  em:not(.article > em) {
+    font-style: normal
+  }
+
+  li:not(.article > li){
+    list-style: none
+  }
+  
+  img:not(.article > img) {
+    border: 0;
+    vertical-align: middle
+  }
+  table:not(.article > table) {
+    border-collapse: collapse;
+    border-spacing: 0
+  }
+
+  p:not(.article > p) {
+    word-wrap: break-word
+  }
+
+  .clearfix {
+    overflow: hidden
+  }
+
+  .article {
+    .content {
+      pre {
+        width: 100%;
+        padding: 20px;
+        background-color: #111;
+        border-radius: 5px;
+        overflow-x: auto;
+        /* 定义滚动条样式 */
+        &::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+          background-color: #111;
+        }
+        /*定义滚动条轨道 内阴影+圆角*/
+        &::-webkit-scrollbar-track {
+          box-shadow: inset 0 0 0px rgba(240, 240, 240, .5);
+          border-radius: 5px;
+          background-color: #222;
+        }
+        /*定义滑块 内阴影+圆角*/
+        &::-webkit-scrollbar-thumb {
+          border-radius: 5px;
+          box-shadow: inset 0 0 0px rgba(240, 240, 240, .5);
+          background-color: #333;
+        }
+      }
+      table {
+        width: 50%;
+        border: 1px solid #333;
+        border-bottom: 0;
+        border-spacing: 0;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background-color: #111
+
+        tr {
+          &:hover {
+            background-color: #444;  
+          }
+          td,th{
+            padding: 4px 8px;
+            font-size: 14px;
+            line-height: 24px;
+            color: #8a8a8a;
+            cursor: pointer;
+            border: 1px solid #666;
+            word-break: break-all;
+            text-align: left
+          }
+          th {
+            color: #aaa;
+            background-color: #222;  
+          }
+        }
+
+      }
+
+      a {
+        color: #aaa;
+        &:hover {
+          color: #666;
+        }
+      }
+
+      hr {
+        width:100%;
+        border: 0;
+        height: 2px;
+        background: #333;
+      }
+
+      blockquote {
+        position: relative;
+        background: #333;
+        padding: 1px 12px;
+        border-left: 5px solid #666;
+        border-radius: 2px;
+        margin: 8px 0;
+      }
+    }  
+  }
+}
+
+
+
+.el-message {
+  background-color: #333 !important;
+  border: 0 !important;
+  min-width: 200px !important;
+}
+.el-message-box {
+  background-color: #222 !important;
+  border: 0 !important;
+}
+.el-message-box .el-message-box__title {
+  color: #ccc !important;
+}
+.el-message-box .el-message-box__message {
+  color: #ccc !important;
+}
+.el-message-box .el-message-box__container .el-icon-warning {
+  color: #606266 !important;
+}
+.el-message-box__btns .el-button--default {
+  background-color: #606266 !important;
+  border: 0;
+  color: #ccc !important;
+}
+.el-message-box__btns .el-button--default:hover {
+  background-color: #606266;
+  color: #ddd;
+}
+.el-tooltip__popper.is-dark {
+  color: #8a8a8a !important;
+}

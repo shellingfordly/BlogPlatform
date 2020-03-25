@@ -13,7 +13,6 @@ module.exports = {
     port: 4000,
     https: false,
     hotOnly: false,
-    // proxy: null,
     proxy: {
       '/api': {
         target: "http://localhost:3000",
@@ -22,7 +21,6 @@ module.exports = {
         }
       },
     },
-    before: () => {
-    }
+    before: () => {}
   }
 }

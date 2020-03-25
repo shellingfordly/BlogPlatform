@@ -2,7 +2,7 @@
   <div class="theTime">
     <img class="time_img" src="../assets/imgs/time.svg" alt />
     <span class="real_time">
-      <span class="date">{{date.date}}</span>
+      <span class="date">{{date.year}}</span>
       <span class="time">{{date.time}}</span>
       <span class="day">{{date.day}}</span>
     </span>
@@ -16,12 +16,7 @@ export default {
   data() {
     const theTime = new Date();
     let date = {};
-    date.date =
-      theTime.getFullYear() +
-      "-" +
-      theTime.getMonth() +
-      "-" +
-      theTime.getDate();
+    date.year = new Date().toJSON().split(/[a-z]|[A-Z]/g)[0];
     date.time = theTime.toLocaleTimeString().slice(2);
     switch (theTime.getDate() % 7) {
       case 0:
@@ -62,7 +57,7 @@ export default {
 <style lang="stylus" scoped>
 .theTime {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 30px;
   padding: 10px 20px;
   background-color: #111;
   border-radius: 10px;

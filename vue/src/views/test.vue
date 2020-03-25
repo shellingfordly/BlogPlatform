@@ -1,34 +1,30 @@
 <template>
-  <div class="test">
-    <div class="div">
-      <div class="s">sss</div>
-    </div>sadadadad
+  <div class="markdown">
+    {{sss.a}}
+    <button @click="aaaa">zzz</button>
+    <!-- <Markdown v-model="sss" /> -->
   </div>
 </template>
 
 <script>
+// import Markdown from "vue-meditor";
+
 export default {
+  name: "markdown",
   data() {
-    return {};
+    return {
+      sss: {
+        a: "aaaaa"
+      }
+    };
   },
-  created() {},
-  methods: {}
+  methods: {
+    aaaa() {
+      this.sss.a = "xxxxx";
+    }
+  },
+  components: {
+    // Markdown
+  }
 };
 </script>
-
-<style lang="stylus" scoped>
-.test {
-  width: 400px;
-
-  .div {
-    width: 100%;
-    height: 0;
-    padding-bottom: 50%;
-
-    .s {
-      width: 20px;
-      height: 300px;
-    }
-  }
-}
-</style>

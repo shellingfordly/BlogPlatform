@@ -4,7 +4,12 @@ const Article = require('../models/articleSchema')
 module.exports = {
   // 增加文章
   "POST /addArticle": async cxt => {
-    const { title, content, articleList, author } = cxt.request.body
+    const {
+      title,
+      content,
+      articleList,
+      author
+    } = cxt.request.body
     const date = new Date()
     const article = await Article.create({
       title,
@@ -15,12 +20,16 @@ module.exports = {
       num: date.getTime(),
       time: date.toLocaleDateString() + " " + date.toLocaleTimeString()
     })
-    cxt.body = 1
+    cxt.body = "发布成功"
   },
   // 或者某用户的所有文章
   "GET /getUserAllArticles": async cxt => {
-    const { articleList } = cxt.request.query
-    const articles = await Article.find({ articleList })
+    const {
+      articleList
+    } = cxt.request.query
+    const articles = await Article.find({
+      articleList
+    })
     cxt.body = articles
   },
   // 获取所有文章信息
@@ -30,15 +39,27 @@ module.exports = {
   },
   // 获取单篇文章内容
   "GET /getSingleArticle": async cxt => {
-    const { articleId } = cxt.request.query
-    const article = await Article.find({ articleId })
-    cxt.body = article[0]
+    const {
+      articleId
+    } = cxt.request.query
+    const article = await Article.findOne({
+      articleId
+    })
+    cxt.body = article
   },
   // 点赞某文章
   "POST /likeArticle": async cxt => {
-    const { type, account, articleId } = cxt.request.body
-    const article = await Article.findOne({ articleId })
-    const user = await User.findOne({ account })
+    const {
+      type,
+      account,
+      articleId
+    } = cxt.request.body
+    const article = await Article.findOne({
+      articleId
+    })
+    const user = await User.findOne({
+      account
+    })
     const find_article = article.like.indexOf(account)
     const find_user = user.likeArticle.indexOf(articleId)
     if (type) {
@@ -105,9 +126,17 @@ module.exports = {
   },
   // 收藏某文章
   "POST /collectArticle": async cxt => {
-    const { type, account, articleId } = cxt.request.body
-    const article = await Article.findOne({ articleId })
-    const user = await User.findOne({ account })
+    const {
+      type,
+      account,
+      articleId
+    } = cxt.request.body
+    const article = await Article.findOne({
+      articleId
+    })
+    const user = await User.findOne({
+      account
+    })
     const find_article = article.collect.indexOf(account)
     const find_user = user.collectArticle.indexOf(articleId)
     if (type) {
@@ -175,22 +204,96 @@ module.exports = {
   },
   // 获取收藏全部文章
   "POST /getCollectArticles": async cxt => {
-    const { account } = cxt.request.body
-    const user = await User.findOne({ account })
+    const {
+      account
+    } = cxt.request.body
+    const user = await User.findOne({
+      account
+    })
     let collectArticles = []
 
     for (let i = 0; i < user.collectArticle.length; i++) {
-      let article = await Article.findOne({ articleId: user.collectArticle[i] })
+      let article = await Article.findOne({
+        articleId: user.collectArticle[i]
+      })
       collectArticles.push(article)
     }
     cxt.body = collectArticles
   },
   // 删除文章
   "POST /deleteArticle": async cxt => {
-    const { articleId } = cxt.request.body
-    Article.deleteOne({ articleId }, (err, docs) => {
-      if (err) { return console.log('删除数据失败') }
+    const {
+      articleId
+    } = cxt.request.body
+    const delArticle = await Article.findOne({
+      articleId
+    })
+    // 删除收藏该文章的用户
+    delArticle.collect.forEach(account => {
+      User.updateOne({
+          account
+        }, {
+          '$pull': {
+            collectArticle: articleId
+          }
+        },
+        function (err, data) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(data);
+          }
+        });
+    });
+    // 删除喜欢该文章的用户
+    delArticle.like.forEach(account => {
+
+      User.updateOne({
+          account
+        }, {
+          '$pull': {
+            likeArticle: articleId
+          }
+        },
+        function (err, data) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(data);
+          }
+        });
+    });
+    // 删除文章
+    Article.deleteOne({
+      articleId
+    }, (err, docs) => {
+      if (err) {
+        return console.log('删除数据失败')
+      }
     })
     cxt.body = 1
+  },
+  // 修改文章
+  "POST /modifyArticle": async cxt => {
+    const {
+      articleId,
+      article
+    } = cxt.request.body
+    Article.update({
+      articleId
+    }, {
+      '$set': {
+        title: article.title,
+        content: article.content,
+      }
+    }, function (err, data) {
+      // 必须有回调
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(data);
+      }
+    });
+    cxt.body = "修改成功"
   }
 }

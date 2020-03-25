@@ -37,9 +37,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import BackBtn from "../components/BackBtn";
-
+import { login, logon } from "../api/user";
 export default {
   name: "login",
   components: {
@@ -79,46 +78,32 @@ export default {
       }
     };
   },
-  mounted() {},
   methods: {
     switchTitle() {
       this.title = !this.title;
     },
-    login() {
-      if (this.title) {
-        // 登录
-        axios
-          .post("http://localhost:3000/login", {
-            account: this.ruleForm.account,
-            password: this.ruleForm.pass
-          })
-          .then(res => {
-            if (res.code == 1) {
-              this.$message("登录成功");
-              localStorage.setItem("user", JSON.stringify(res.msg));
-              this.$router.push({ name: "home" });
-            } else if (res.code == 2) {
-              this.$message("密码错误");
-            } else {
-              this.$message("用户不存在");
-            }
-          });
+    // 注册
+    async logonFn() {
+      let result = await logon(this.ruleForm.account, this.ruleForm.pass);
+      if (result.code) {
+        this.$message("注册成功，自动登录");
+        localStorage.setItem("user", JSON.stringify(result.msg));
+        this.$router.push({ name: "home" });
       } else {
-        // 注册
-        axios
-          .post("http://localhost:3000/logon", {
-            account: this.ruleForm.account,
-            password: this.ruleForm.pass
-          })
-          .then(res => {
-            if (res.code) {
-              this.$message("注册成功，自动登录");
-              localStorage.setItem("user", JSON.stringify(res.msg));
-              this.$router.push({ name: "home" });
-            } else {
-              this.$message("账号已存在，请重新注册");
-            }
-          });
+        this.$message("账号已存在，请重新注册");
+      }
+    },
+    // 登录
+    async loginFn() {
+      let result = await login(this.ruleForm.account, this.ruleForm.pass);
+      if (result.code == 1) {
+        this.$message("登录成功");
+        localStorage.setItem("user", JSON.stringify(result.msg));
+        this.$router.push({ name: "home" });
+      } else if (result.code == 2) {
+        this.$message("密码错误");
+      } else {
+        this.$message("用户不存在");
       }
     },
     keyLogin(ruleForm) {
@@ -127,7 +112,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.login();
+          this.title ? this.loginFn() : this.logonFn();
         } else {
           return false;
         }

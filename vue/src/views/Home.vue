@@ -32,13 +32,16 @@
                 <span>
                   <img src="../assets/imgs/dianzan.svg" alt />
                   {{article.like | like_count}}
+                  <!-- {{like_count(article.like)}} -->
                 </span>
                 <span>
                   <img src="../assets/imgs/mark.svg" alt />
                   {{article.collect | collect_count}}
+                  <!-- {{collect_count(article.collect )}} -->
                 </span>
               </p>
-              <p class="article_content">{{article.content}}</p>
+              <!-- <div class="article_content" v-html="content(article.content)"></div> -->
+              <div class="article_content">{{article.content}}</div>
             </div>
           </div>
         </vue-scroll>
@@ -48,10 +51,10 @@
 </template>
 
 <script>
-import axios from "axios";
 import BackBtn from "../components/BackBtn";
 import TheTime from "../components/TheTime";
 import { getAllArticles } from "../api/article";
+import { getEverydaySentence } from "../api/other";
 
 export default {
   name: "home",
@@ -81,22 +84,29 @@ export default {
       return collect.length;
     }
   },
+  computed: {
+    content() {
+      return function(content) {
+        return this.marked(content);
+      };
+    }
+  },
   created() {
+    console.log();
     this.initialHomePage();
   },
   methods: {
     async initialHomePage() {
       // 获取所有作者的文章
-      const ariticles = await getAllArticles();
-      this.showArticles = ariticles;
+      const articles = await getAllArticles();
+      this.showArticles = articles.sort((a, b) => b.num - a.num);
       this.everydaySentence();
     },
     // 获取每日一句
     async everydaySentence() {
-      axios.get("https://v2.jinrishici.com/one.svg?color=gray").then(res => {
-        let arr = res.match(/[\u4e00-\u9fa5]+/g);
-        this.sentence = arr[0] + "，" + arr[1];
-      });
+      let result = await getEverydaySentence();
+      let arr = result.match(/[\u4e00-\u9fa5]+/g);
+      this.sentence = arr[0] + "，" + arr[1];
     },
     // 跳转文章浏览页面
     targetArticlePage(i) {
@@ -109,9 +119,9 @@ export default {
     },
     // 切换到其他文章作者信息
     targetOtherUser(articleList) {
-      if (this.user && articleList === this.user.articleList)
+      if (this.user && articleList === this.user.articleList) {
         this.$router.push({ name: "user" });
-      else this.$router.push({ name: "otherUser", params: { articleList } });
+      } else this.$router.push({ name: "otherUser", params: { articleList } });
     },
     // 跳转到用户个人页面/或者登录页面
     targetUserPage() {

@@ -69,9 +69,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import BackBtn from "../components/BackBtn";
-
+import { modifyUserMsg } from "../api/user";
 export default {
   name: "userInformation",
   components: {
@@ -145,12 +144,12 @@ export default {
         this.$router.push({ name: "home" });
         return;
       }
-      this.ruleForm.account = user.account;
-      this.ruleForm.password = user.password;
-      this.ruleForm.name = user.name || "用户" + user.num;
-      this.ruleForm.signature = user.signature || "暂无签名";
-      this.ruleForm.about = user.about || "...";
-      // this.ruleForm.other = user.other;
+      for (const key in this.ruleForm) {
+        this.ruleForm[key] = user[key];
+      }
+      Object.keys(this.ruleForm2).forEach(key => {
+        this.ruleForm2[key] = user.other[key];
+      });
     },
     submitForm(formName) {
       var e = document.createEvent("MouseEvents");
@@ -194,18 +193,17 @@ export default {
           });
         });
     },
-    modifyInformation() {
+    async modifyInformation() {
       let user = this.ruleForm;
       user.other = this.ruleForm2;
-      axios.post("http://localhost:3000/modifyUserMsg", user).then(res => {
-        if (res.code)
-          this.$message({
-            type: "info",
-            message: "修改成功!"
-          });
-        localStorage.setItem("user", JSON.stringify(res.msg));
-        this.$router.push({ name: "about" });
-      });
+      let result = await modifyUserMsg(user);
+      if (result.code)
+        this.$message({
+          type: "info",
+          message: "修改成功!"
+        });
+      localStorage.setItem("user", JSON.stringify(result.msg));
+      this.$router.push({ name: "about" });
     }
   }
 };

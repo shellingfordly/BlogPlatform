@@ -8,7 +8,7 @@
       </div>
       <div class="explain">
         <router-link tag="p" class="name text" to="/userInformation">{{name}}</router-link>
-        <p class="about text">{{about}}</p>
+        <p class="text">{{about}}</p>
       </div>
       <div class="quit_box">
         <img src="../assets/imgs/quit.svg" @click="targetLoginPage" alt />
@@ -38,7 +38,7 @@
 
 <script>
 import BackBtn from "../components/BackBtn";
-import axios from "axios";
+import { modifyUserMsg } from "../api/user";
 
 export default {
   name: "about",
@@ -78,6 +78,7 @@ export default {
     targetLoginPage() {
       this.$router.push({ name: "login" });
       localStorage.removeItem("user");
+      localStorage.removeItem("article");
     },
     searchUserMsg() {
       let user = this.user;
@@ -93,8 +94,9 @@ export default {
     },
     selectedHead() {
       this.dialogVisible = false;
+
       this.headImg = require(`../assets/imgs/header/header${this.i + 1}.jpg`);
-      axios.post("http://localhost:3000/modifyUserHeadId", {
+      modifyUserMsg({
         headId: this.i + 1,
         account: this.user.account
       });
@@ -107,6 +109,8 @@ export default {
 
 <style lang="stylus">
 .about {
+  padding-top: 200px;
+
   .headerbox, .alert_box {
     .headerbox_link {
       width: 80px;
@@ -125,8 +129,8 @@ export default {
   }
 
   .headerbox {
+    margin: auto;
     width: 400px;
-    margin: 200px auto 0;
 
     .explain {
       margin-top: 20px;

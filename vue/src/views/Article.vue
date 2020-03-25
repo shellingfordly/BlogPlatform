@@ -4,18 +4,17 @@
     <div class="container">
       <div class="headline">{{article.title}}</div>
       <div class="other">
-        <router-link
-          class="author"
-          tag="span"
-          :to="{name:'user',params: {articleList: article.articleList}}"
-        >
+        <!-- 作者 -->
+        <span class="author" @click="targetOtherUser(article.articleList)">
           <i class="el-icon-user-solid"></i>
           {{article.author}}
-        </router-link>
+        </span>
+        <!-- 发布时间 -->
         <span class="time">
           <img src="../assets/imgs/time.svg" alt />
           {{article.time}}
         </span>
+        <!-- 点赞数 -->
         <span>
           <img
             v-if="isLike"
@@ -26,7 +25,9 @@
           />
           <img v-else class="like" src="../assets/imgs/dianzan.svg" @click="likeArticle" alt />
           {{like_count}}
+          <!-- {{ article.like |like_count}} -->
         </span>
+        <!-- 收藏数 -->
         <span>
           <img
             v-if="isCollect"
@@ -37,46 +38,63 @@
           />
           <img v-else class="like" src="../assets/imgs/mark.svg" @click="collectArticle" alt />
           {{collect_count}}
+          <!-- {{article.collect |collect_count}} -->
         </span>
+        <!-- 编辑文章 -->
         <i v-if="modifyBtn" class="el-icon-edit-outline" @click="editorArticle"></i>
+        <!-- 删除文章 -->
         <i v-if="modifyBtn" class="el-icon-delete" @click="deletePrompt"></i>
       </div>
       <div class="content_box">
-        <vue-scroll :ops="ops">
-          <div class="content">
-            <p class="sentence" v-for="(sentence,i) in sentenceList" :key="i">
-              <span class="space"></span>
-              {{sentence}}
-            </p>
-          </div>
-        </vue-scroll>
+        <div class="content" v-html="contentHtml"></div>
       </div>
     </div>
+    <vueToTop type="10" color="#333" size="40" top="700" bottom="80" right="100"></vueToTop>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import BackBtn from "../components/BackBtn";
+import vueToTop from "vue-totop";
+import {
+  getSingleArticle,
+  deleteArticle,
+  likeArticle,
+  collectArticle
+} from "../api/article";
 
 export default {
   name: "Article",
-  components: { BackBtn },
+  components: { BackBtn, vueToTop },
   data() {
+    const throttle = this.$store.state.throttle; // 函数节流
     return {
       article: {},
       sentenceList: [],
+      contentHtml: "",
+      isShowTargetTopBtn: false,
       user: JSON.parse(localStorage.getItem("user")),
       isLike: false,
       isCollect: false,
       like_count: 0,
       collect_count: 0,
       link: "auto",
-      ops: {
-        bar: {
-          opacity: 0
-        }
-      }
+      likeArticle: throttle(() => {
+        if (this.targetLogin()) return;
+        this.isLike = !this.isLike;
+        this.isLike ? this.like_count++ : this.like_count--;
+        likeArticle(this.isLike, this.user.account, this.article.articleId);
+      }, 3000),
+      collectArticle: throttle(() => {
+        if (this.targetLogin()) return;
+        this.isCollect = !this.isCollect;
+        this.isCollect ? this.collect_count++ : this.collect_count--;
+        collectArticle(
+          this.isCollect,
+          this.user.account,
+          this.article.articleId
+        );
+      }, 3000)
     };
   },
   computed: {
@@ -88,14 +106,18 @@ export default {
   created() {
     this.searchArticle();
   },
+  mounted() {
+    window.addEventListener("scroll", this.getScrollPosition, false);
+  },
   methods: {
     async searchArticle() {
-      const article = await axios.get(
-        "http://localhost:3000/getSingleArticle?articleId=" +
-          this.$route.query.articleId
-      );
+      const article = await getSingleArticle(this.$route.query.articleId);
       this.article = article;
-      this.dealArticle(article.content);
+      // 使用marked解析v-html的内容
+      this.contentHtml = this.marked(article.content);
+      var n = this.contentHtml.indexOf(/</);
+      console.log(n);
+
       this.isLikeAndCollect(article);
     },
     isLikeAndCollect(data) {
@@ -120,16 +142,6 @@ export default {
         if (item) this.sentenceList.push(item);
       });
     },
-    likeArticle() {
-      if (this.targetLogin()) return;
-      this.isLike = !this.isLike;
-      this.isLike ? this.like_count++ : this.like_count--;
-    },
-    collectArticle() {
-      if (this.targetLogin()) return;
-      this.isCollect = !this.isCollect;
-      this.isCollect ? this.collect_count++ : this.collect_count--;
-    },
     deletePrompt() {
       this.$confirm("确定删除吗?", "提示", {
         confirmButtonText: "确定",
@@ -143,21 +155,19 @@ export default {
           this.$message("已取消");
         });
     },
+    // 删除文章
     deleteArticle() {
       if (this.article.author != this.user.name) return;
-      axios
-        .post("http://localhost:3000/deleteArticle", {
-          articleId: this.article.articleId
-        })
-        .then(res => {
-          if (res) this.$message("删除成功");
-          this.$router.go(-1);
-        });
+      const result = deleteArticle(this.article.articleId);
+      if (result) this.$message("删除成功");
+      this.$router.go(-1);
     },
     editorArticle() {
       this.$router.push({
         name: "addAriticle",
-        query: { articleId: this.article.articleId }
+        params: {
+          article: this.article
+        }
       });
     },
     targetLogin() {
@@ -167,42 +177,11 @@ export default {
         return true;
       }
       return false;
-    }
-  },
-  destroyed() {
-    if (!this.user) return;
-    const { isLike, isCollect } = JSON.parse(
-      localStorage.getItem("islikeAndCollect")
-    );
-    if (isLike !== this.isLike) {
-      if (this.isLike) {
-        axios.post("http://localhost:3000/likeArticle", {
-          type: true,
-          account: this.user.account,
-          articleId: this.article.articleId
-        });
-      } else {
-        axios.post("http://localhost:3000/likeArticle", {
-          type: false,
-          account: this.user.account,
-          articleId: this.article.articleId
-        });
-      }
-    }
-    if (isCollect !== this.isCollect) {
-      if (this.isCollect) {
-        axios.post("http://localhost:3000/collectArticle", {
-          type: true,
-          account: this.user.account,
-          articleId: this.article.articleId
-        });
-      } else {
-        axios.post("http://localhost:3000/collectArticle", {
-          type: false,
-          account: this.user.account,
-          articleId: this.article.articleId
-        });
-      }
+    },
+    targetOtherUser(articleList) {
+      if (this.user && articleList === this.user.articleList) {
+        this.$router.push({ name: "user" });
+      } else this.$router.push({ name: "otherUser", params: { articleList } });
     }
   }
 };
@@ -219,7 +198,7 @@ export default {
     color: #8a8a8a;
 
     .headline {
-      margin-top: 40px;
+      padding-top: 40px;
       text-align: center;
       font-size: 40px;
     }
@@ -286,20 +265,29 @@ export default {
 
     .content_box {
       height: 73%;
-      margin-top: 20px;
+      margin-top: 40px;
       font-size: 20px;
       line-height: 30px;
 
       .content {
-        .sentence {
-          width: 1000px;
-
-          .space {
-            padding-left: 40px;
-          }
-        }
+        width: 900px;
+        margin: auto;
       }
     }
+  }
+
+  .targetTop {
+    position: fixed;
+    bottom: 80px;
+    right: 100px;
+    width: 40px;
+    height: 40px;
+    border-radius: 18px;
+    background-color: #222;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    color: #8a8a8a;
   }
 }
 </style>
