@@ -92,7 +92,6 @@ export default {
     }
   },
   created() {
-    console.log();
     this.initialHomePage();
   },
   methods: {

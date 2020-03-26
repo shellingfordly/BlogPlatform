@@ -209,7 +209,6 @@ export default {
       this.showArticles = this.ownArticles = articles.sort(
         (a, b) => b.num - a.num
       );
-      console.log(articles);
       this.judgeLikeUser();
     },
     // 判断是否关注作者

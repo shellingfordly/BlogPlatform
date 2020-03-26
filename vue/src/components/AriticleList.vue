@@ -37,7 +37,6 @@ export default {
       this.getMsgJudgment();
     },
     articleList() {
-      console.log("观察用户变化", this.articleList);
       this.getPersonalArticle();
     }
   },

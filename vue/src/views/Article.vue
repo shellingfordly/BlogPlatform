@@ -7,12 +7,12 @@
         <!-- 作者 -->
         <span class="author" @click="targetOtherUser(article.articleList)">
           <i class="el-icon-user-solid"></i>
-          {{article.author}}
+          {{article.author || "author"}}
         </span>
         <!-- 发布时间 -->
         <span class="time">
           <img src="../assets/imgs/time.svg" alt />
-          {{article.time}}
+          {{article.time || "2020-02-02 02:20:20"}}
         </span>
         <!-- 点赞数 -->
         <span>
@@ -24,7 +24,7 @@
             alt
           />
           <img v-else class="like" src="../assets/imgs/dianzan.svg" @click="likeArticle" alt />
-          {{like_count}}
+          {{like_count || 0}}
           <!-- {{ article.like |like_count}} -->
         </span>
         <!-- 收藏数 -->
@@ -37,7 +37,7 @@
             alt
           />
           <img v-else class="like" src="../assets/imgs/mark.svg" @click="collectArticle" alt />
-          {{collect_count}}
+          {{collect_count || 0}}
           <!-- {{article.collect |collect_count}} -->
         </span>
         <!-- 编辑文章 -->
@@ -115,9 +115,6 @@ export default {
       this.article = article;
       // 使用marked解析v-html的内容
       this.contentHtml = this.marked(article.content);
-      var n = this.contentHtml.indexOf(/</);
-      console.log(n);
-
       this.isLikeAndCollect(article);
     },
     isLikeAndCollect(data) {
@@ -199,6 +196,7 @@ export default {
 
     .headline {
       padding-top: 40px;
+      height: 52px;
       text-align: center;
       font-size: 40px;
     }

@@ -49,14 +49,6 @@
       </div>
 
       <div class="content">
-        <router-link
-          v-if="isAddArticle"
-          class="add_ariticle content_title"
-          tag="div"
-          to="/addAriticle"
-        >
-          <i class="el-icon-plus"></i>
-        </router-link>
         <vue-scroll :ops="ops">
           <!-- 关注 -->
           <div class="follower_box" v-if="isShowFollower">
@@ -80,6 +72,14 @@
           </div>
           <!-- 文章 -->
           <div class="ariticleList" v-if="isShowArticle">
+            <router-link
+              v-if="isAddArticle"
+              class="add_ariticle content_title"
+              tag="div"
+              to="/addAriticle"
+            >
+              <i class="el-icon-plus"></i>
+            </router-link>
             <p class="content_title" v-if="isShowCollect">收藏文章</p>
             <div class="hint" v-if="!showArticles.length">{{isShowCollect?"未收藏文章":"未发布文章"}}</div>
             <div class="ariticle" v-for="(article,i) in showArticles" :key="i">
@@ -282,8 +282,6 @@ export default {
 .user {
   .container {
     .content {
-      height: 85%;
-
       .content_title {
         margin-top: 30px;
       }

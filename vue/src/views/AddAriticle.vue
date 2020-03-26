@@ -75,12 +75,17 @@ export default {
         });
     },
     async submitArticle() {
-      const { article } = this.$route.params;
+      const rxArticle = this.$route.params.article;
+      let article = this.article;
+      if (!article.title) {
+        this.$message("请添加文章标题！");
+        return;
+      }
       let res = null;
-      if (article) {
-        res = await modifyArticle(article.articleId, this.article);
+      if (rxArticle) {
+        res = await modifyArticle(rxArticle.articleId, article);
       } else {
-        res = await addArticle(this.article);
+        res = await addArticle(article);
       }
       if (res) {
         this.$message(res);
@@ -150,13 +155,41 @@ export default {
         border: 0 !important;
 
         .markdown-toolbars {
+          height: 60px;
           background-color: #111;
+          border-bottom: none;
           border-bottom: 1px solid #222;
+
+          .shift-theme, .import-file {
+            display: none;
+          }
+
+          li[data-v-368e8076] {
+            span {
+              width: 50px;
+              font-size: 25px;
+            }
+
+            span.icon-preview, span.icon-on, span.icon-download, span.icon-md {
+              display: none;
+            }
+          }
         }
 
         .markdown-content {
+          .markdown-editor {
+            ul.index {
+              background-color: #222;
+            }
+
+            textarea[data-v-368e8076] {
+              height: 100%;
+              background-color: #111;
+            }
+          }
+
           .markdown-theme-light {
-            // display: none;
+            display: none;
           }
         }
       }

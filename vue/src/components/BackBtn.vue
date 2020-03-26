@@ -21,9 +21,7 @@ export default {
         translateY: 20
       });
     },
-    mounted() {
-      console.log(this.link);
-    },
+
     leaveEffect() {
       anime({
         targets: ".home .back_btn .rope",

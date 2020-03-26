@@ -9,22 +9,12 @@ import Login from './views/Login.vue'
 import UserInformation from './views/UserInformation.vue'
 import AddAriticle from './views/AddAriticle.vue'
 import Article from './views/Article.vue'
-import test from './views/test.vue'
 
 
 Vue.use(Router)
 const router = new Router({
   mode: 'history',
-  routes: [
-    {
-      path: '/test',
-      name: 'test',
-      component: test,
-      meta: {
-        title: 'myWeb'
-      }
-    },
-    {
+  routes: [{
       path: '/',
       name: 'initial',
       component: Initial,
