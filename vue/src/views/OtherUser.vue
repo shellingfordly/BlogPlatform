@@ -225,7 +225,11 @@ export default {
     },
     // 跳转作者详细信息页面
     targetAbout() {
-      this.$router.push({ name: "about" });
+      this.$router.push({
+        name: "about",
+        query: { userName: this.otherUser.name },
+        params: { user: this.otherUser }
+      });
     },
     // 展示作者的所有文章
     myselfArticle() {

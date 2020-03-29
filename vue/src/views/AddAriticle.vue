@@ -115,6 +115,7 @@ export default {
     },
     shiftMarkdown() {
       this.isMarkdown = !this.isMarkdown;
+      this.isMarkdown && this.$message("切换为markdown语法");
     }
   }
 };

@@ -107,7 +107,7 @@ export default {
       }
     };
     return {
-      link: "about",
+      link: "user",
       check: false,
       ruleForm: {
         name: "",

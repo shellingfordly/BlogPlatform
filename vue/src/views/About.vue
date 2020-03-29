@@ -3,11 +3,11 @@
     <BackBtn :link="link"></BackBtn>
 
     <div class="headerbox">
-      <div class="headerbox_link" @click="dialogVisible = true">
+      <div class="headerbox_link" @click="isEditable && (dialogVisible = true)">
         <img :src="headImg" alt />
       </div>
       <div class="explain">
-        <router-link tag="p" class="name text" to="/userInformation">{{name}}</router-link>
+        <p class="name text" @click="targetUserInformationPage">{{name}}</p>
         <p class="text">{{about}}</p>
       </div>
       <div class="quit_box">
@@ -47,18 +47,14 @@ export default {
     for (let i = 1; i < 9; i++) {
       imgList.push(require(`../assets/imgs/header/header${i}.jpg`));
     }
-    const user = JSON.parse(localStorage.getItem("user"));
-    let headImg = "";
-    headImg = require(`../assets/imgs/header/header${
-      user ? user.headId : 1
-    }.jpg`);
     return {
-      headImg,
+      headImg: "",
       dialogVisible: false,
       user: JSON.parse(localStorage.getItem("user")),
+      isEditable: true,
       name: "",
       about: "",
-      link: "user",
+      link: "auto",
       imgList,
       isSelected: false,
       i: ""
@@ -81,9 +77,15 @@ export default {
       localStorage.removeItem("article");
     },
     searchUserMsg() {
+      const otheruser = this.$route.params.user;
       let user = this.user;
+      if (otheruser) {
+        this.isEditable = false;
+        user = otheruser;
+      }
       this.name = user.name || "用户" + user.num;
       this.about = user.about || "...";
+      this.headImg = require(`../assets/imgs/header/header${user.headId}.jpg`);
     },
     modifyHeader(i) {
       for (let j = 0; j < 8; j++) {
@@ -94,7 +96,6 @@ export default {
     },
     selectedHead() {
       this.dialogVisible = false;
-
       this.headImg = require(`../assets/imgs/header/header${this.i + 1}.jpg`);
       modifyUserMsg({
         headId: this.i + 1,
@@ -102,6 +103,10 @@ export default {
       });
       this.user.headId = this.i + 1;
       localStorage.setItem("user", JSON.stringify(this.user));
+    },
+    targetUserInformationPage() {
+      if (!this.isEditable) return;
+      this.$router.push({ name: "userInformation" });
     }
   }
 };
