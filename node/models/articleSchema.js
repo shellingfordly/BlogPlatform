@@ -1,31 +1,32 @@
 const mongoose = require('mongoose')
 
 let articleSchema = mongoose.Schema({
-  title: String,
-  content: String,
-  articleList: {
+  title: String, // 文章标题
+  content: String, // 文章内容
+  articleList: { // 文章对应作者
     type: String,
     required: true,
   },
-  articleId: {
+  articleId: { // 文章id
     type: String,
     required: true,
   },
-  author: {
+  author: { // 作者
     type: String,
     required: true,
   },
-  time: {
+  time: { // 发布时间
     type: String,
     required: true,
   },
-  num: {
+  num: { // 编号
     type: Number,
     required: true,
   },
-  like: Array,
-  collect: Array,
-  comments: Array
+  like: Array, // 点赞者
+  collect: Array, // 收藏者
+  comments: Array, // 评论
+  typeList: Array, //文章类型
 })
 
 module.exports = mongoose.model('user_articles', articleSchema)

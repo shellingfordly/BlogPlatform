@@ -39,7 +39,8 @@ export default {
         title: "",
         content: "",
         articleList: user.account,
-        author: user.name
+        author: user.name,
+        typeList: []
       },
       isMarkdown: false,
       link: "user"
@@ -65,7 +66,7 @@ export default {
       this.$confirm("确定退出吗？是否保存文章", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        typeList: "warning"
       })
         .then(() => {
           this.saveArticle();
@@ -75,8 +76,9 @@ export default {
         });
     },
     async submitArticle() {
-      const rxArticle = this.$route.params.article;
+      let rxArticle = this.$route.params.article;
       let article = this.article;
+      this.dealArticleType(article);
       if (!article.title) {
         this.$message("请添加文章标题！");
         return;
@@ -91,6 +93,13 @@ export default {
         this.$message(res);
         this.$router.push({ name: "user" });
       }
+    },
+    dealArticleType(article) {
+      let typeList = article.content.match(/#\S+?#/g);
+      if (!typeList || typeList.length === 0) return;
+      typeList.forEach(type => {
+        article.typeList.push(type.replace(/#/g, "").toLowerCase());
+      });
     },
     saveArticle() {
       let article = this.article;

@@ -311,7 +311,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../assets/css/iconfont.css';
-@import '../assets/css/home.styl';
+@import '../assets/css/common.styl';
 @import '../assets/css/user.styl';
 @import '../assets/css/articlelist.styl';
 </style>

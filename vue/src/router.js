@@ -9,6 +9,7 @@ import Login from './views/Login.vue'
 import UserInformation from './views/UserInformation.vue'
 import AddAriticle from './views/AddAriticle.vue'
 import Article from './views/Article.vue'
+import Type from './views/Type.vue'
 
 
 Vue.use(Router)
@@ -61,6 +62,11 @@ const router = new Router({
       path: '/article',
       name: 'article',
       component: Article
+    },
+    {
+      path: '/type/:id',
+      name: 'type',
+      component: Type
     }
   ]
 })

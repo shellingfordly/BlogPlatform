@@ -113,8 +113,15 @@ export default {
     async searchArticle() {
       const article = await getSingleArticle(this.$route.query.articleId);
       this.article = article;
+      // 处理文章类型
+      const content = article.content.replace(
+        /#([a-z]+?|\w+?|[A-Z]+?|[\u4e00-\u9fa5]+?)#/g,
+        ($, exp) => {
+          return `<a class="articleTypeList" href="/type/${exp}">${exp}</a>`;
+        }
+      );
       // 使用marked解析v-html的内容
-      this.contentHtml = this.marked(article.content);
+      this.contentHtml = this.marked(content);
       this.isLikeAndCollect(article);
     },
     isLikeAndCollect(data) {

@@ -1,10 +1,21 @@
 import ajax from './ajax'
 
 /**
- * 获取所有用户信息
+ * 获取所有用户文章
  */
 export const getAllArticles = () =>
   ajax("/api/getAllArticles")
+
+/**
+ * 获取某个类型的所有文章
+ * @param {
+ *  type: 文章类型
+ * } data 
+ */
+export const getTypeArticles = (type) =>
+  ajax("/api/getTypeArticles", {
+    type
+  }, 'post')
 
 /**
  * 获取文章数据
@@ -79,3 +90,8 @@ export const collectArticle = (type, account, articleId) =>
     account,
     articleId
   }, 'post')
+
+/**
+ * 获取所有文章分类
+ */
+export const getAllType = () => ajax("/api/getAllType")

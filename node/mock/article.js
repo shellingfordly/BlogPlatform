@@ -1,25 +1,16 @@
 const User = require('../models/userSchema')
 const Article = require('../models/articleSchema')
+const Type = require('../models/articleTypeSchema')
 
 module.exports = {
   // 增加文章
   "POST /addArticle": async cxt => {
-    const {
-      title,
-      content,
-      articleList,
-      author
-    } = cxt.request.body
+    const article = cxt.request.body
     const date = new Date()
-    const article = await Article.create({
-      title,
-      content,
-      articleList,
-      articleId: articleList + date.getTime(),
-      author,
-      num: date.getTime(),
-      time: date.toLocaleDateString() + " " + date.toLocaleTimeString()
-    })
+    article.articleId = article.articleList + date.getTime()
+    article.num = date.getTime()
+    article.time = date.toLocaleDateString() + " " + date.toLocaleTimeString()
+    await Article.create(article)
     cxt.body = "发布成功"
   },
   // 或者某用户的所有文章
@@ -220,6 +211,22 @@ module.exports = {
     }
     cxt.body = collectArticles
   },
+  // 获取某类型的全部文章
+  "POST /getTypeArticles": async cxt => {
+    const {
+      type
+    } = cxt.request.body
+    console.log(type)
+    let articleList = await Article.find({
+      // 查找某个数组中是否包含某个值，并返回这个数据
+      typeList: {
+        $elemMatch: {
+          $eq: type
+        }
+      }
+    })
+    cxt.body = articleList
+  },
   // 删除文章
   "POST /deleteArticle": async cxt => {
     const {
@@ -277,7 +284,7 @@ module.exports = {
   "POST /modifyArticle": async cxt => {
     const {
       articleId,
-      article
+      article,
     } = cxt.request.body
     Article.update({
       articleId
@@ -285,6 +292,7 @@ module.exports = {
       '$set': {
         title: article.title,
         content: article.content,
+        typeList: article.typeList
       }
     }, function (err, data) {
       // 必须有回调
@@ -295,5 +303,18 @@ module.exports = {
       }
     });
     cxt.body = "修改成功"
+  },
+  // 查询文章分类
+  "GET /getAllType": async cxt => {
+    const articles = await Article.find()
+    let typeList = []
+    articles.forEach(article => {
+      if (article.typeList.length === 0) return
+      article.typeList.forEach(typeName => {
+        typeList.push(typeName)
+      })
+    })
+    typeList = [...new Set(typeList)]
+    cxt.body = typeList
   }
 }

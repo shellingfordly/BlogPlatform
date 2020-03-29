@@ -13,38 +13,18 @@
             <span class="prompt">{{ user ? user.name :"点击登录/注册" }}</span>
           </div>
         </div>
+        <div class="headerbox-bot box" v-show="typeList.length">
+          <router-link
+            class="type"
+            tag="span"
+            :to="'/type/'+type"
+            v-for="(type,i) in typeList"
+            :key="i"
+          >{{type}}</router-link>
+        </div>
       </div>
       <div class="content">
-        <vue-scroll :ops="ops">
-          <div class="ariticleList">
-            <div class="hint" v-if="!showArticles.length">暂无文章发布</div>
-            <div class="ariticle" v-for="(article,i) in showArticles" :key="i">
-              <p class="article_title" @click="targetArticlePage(i)">{{article.title}}</p>
-              <p class="article_other">
-                <span class="author" @click="targetOtherUser(article.articleList)">
-                  <i class="el-icon-user-solid"></i>
-                  {{article.author}}
-                </span>
-                <span>
-                  <img src="../assets/imgs/time.svg" alt />
-                  {{new Date(article.time).toLocaleDateString()}}
-                </span>
-                <span>
-                  <img src="../assets/imgs/dianzan.svg" alt />
-                  {{article.like | like_count}}
-                  <!-- {{like_count(article.like)}} -->
-                </span>
-                <span>
-                  <img src="../assets/imgs/mark.svg" alt />
-                  {{article.collect | collect_count}}
-                  <!-- {{collect_count(article.collect )}} -->
-                </span>
-              </p>
-              <!-- <div class="article_content" v-html="content(article.content)"></div> -->
-              <div class="article_content">{{article.content}}</div>
-            </div>
-          </div>
-        </vue-scroll>
+        <AriticleList :type="type" />
       </div>
     </div>
   </div>
@@ -53,74 +33,37 @@
 <script>
 import BackBtn from "../components/BackBtn";
 import TheTime from "../components/TheTime";
-import { getAllArticles } from "../api/article";
+import AriticleList from "../components/AriticleList";
 import { getEverydaySentence } from "../api/other";
+import { getAllType } from "../api/article";
 
 export default {
   name: "home",
   data() {
     return {
-      articleType: "home",
       user: JSON.parse(localStorage.getItem("user")),
       showArticles: [],
-      ops: {
-        bar: {
-          opacity: 0
-        }
-      },
+      type: { page: "home", type: "" },
       link: "initial",
-      sentence: ""
+      sentence: "",
+      typeList: []
     };
   },
   components: {
     BackBtn,
-    TheTime
-  },
-  filters: {
-    like_count(like) {
-      return like.length;
-    },
-    collect_count(collect) {
-      return collect.length;
-    }
-  },
-  computed: {
-    content() {
-      return function(content) {
-        return this.marked(content);
-      };
-    }
+    TheTime,
+    AriticleList
   },
   created() {
     this.initialHomePage();
   },
   methods: {
-    async initialHomePage() {
-      // 获取所有作者的文章
-      const articles = await getAllArticles();
-      this.showArticles = articles.sort((a, b) => b.num - a.num);
-      this.everydaySentence();
-    },
     // 获取每日一句
-    async everydaySentence() {
+    async initialHomePage() {
+      this.typeList = await getAllType();
       let result = await getEverydaySentence();
       let arr = result.match(/[\u4e00-\u9fa5]+/g);
       this.sentence = arr[0] + "，" + arr[1];
-    },
-    // 跳转文章浏览页面
-    targetArticlePage(i) {
-      this.$router.push({
-        name: "article",
-        query: {
-          articleId: this.showArticles[i].articleId
-        }
-      });
-    },
-    // 切换到其他文章作者信息
-    targetOtherUser(articleList) {
-      if (this.user && articleList === this.user.articleList) {
-        this.$router.push({ name: "user" });
-      } else this.$router.push({ name: "otherUser", params: { articleList } });
     },
     // 跳转到用户个人页面/或者登录页面
     targetUserPage() {
@@ -134,8 +77,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../assets/css/iconfont.css';
-@import '../assets/css/home.styl';
-@import '../assets/css/articlelist.styl';
+@import '../assets/css/common.styl';
 
 .home {
   .container {
@@ -145,17 +87,15 @@ export default {
 
         .sentence {
           height: 28px;
-          padding-left: 30px;
+          margin: 0;
+          text-indent: 30px;
           line-height: 28px;
-          cursor: pointer;
-
-          &:hover {
-            color: #666;
-          }
         }
       }
 
       .headerbox-mid {
+        padding: 15px 20px;
+
         .iconBtn_box {
           padding-left: 30px;
           cursor: pointer;
@@ -175,7 +115,17 @@ export default {
           .prompt {
             margin-left: 20px;
             font-size: 14px;
-            // color: #555;
+          }
+        }
+      }
+
+      .headerbox-bot {
+        .type {
+          margin-right: 5px;
+          cursor: pointer;
+
+          &:hover {
+            color: #666;
           }
         }
       }
