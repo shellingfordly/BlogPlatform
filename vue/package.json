@@ -14,7 +14,7 @@
     "element-ui": "^2.13.0",
     "highlight.js": "^9.18.1",
     "iview": "^1.0.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "marked": "^0.8.2",
     "pug-html-loader": "^1.1.5",
     "pug-plain-loader": "^1.0.0",
